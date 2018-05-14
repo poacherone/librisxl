@@ -546,7 +546,7 @@
     "variantAgent": {
       "addLink": "hasVariant",
       "aboutAlias": "_:agent",
-      "include": ["agentData"]
+      "include": ["agentDataWithRelatedAs"]
     },
 
     "variantPerson": {
@@ -583,12 +583,21 @@
       }
     },
 
+    "agentDataWithRelatedAs": {
+      "include": "agentData",
+      "$i": {"addLink": "marc:relatedAs", "resourceType": "Relation", "property": "label"}
+    },
+
+    "agentDataWithRelation": {
+      "include": "agentData",
+      "$i": {"addLink": "relation", "resourceType": "Relation", "property": "label"}
+    },
+
     "agentData": {
       "pendingResources": {
         "_:place": {"about": "_:agent", "addLink": "place", "resourceType": "Place"}
       },
       "TODO:alternative $a": {"addProperty": "altLabel"},
-      "$i": {"addLink": "marc:relatedAs", "resourceType": "Relation", "property": "label"},
       "TODO:$d": {"TODO": "if same as 100.$d (plus drop similar duplicate splitValueProperties)"},
       "$v": {"about": "_:agent", "property": "marc:formSubdivision"},
       "$w": {"about": "_:agent", "property": "marc:controlSubfield"},
@@ -660,8 +669,7 @@
       "$8": {"about": "_:contribution", "property": "marc:groupid"}
     },
 
-    "hasRelationshipPerson": {
-      "include": ["relationshipData"],
+    "contributingPerson": {
       "pendingResources": {
         "_:agent": {
           "about": "_:contribution",
@@ -672,8 +680,7 @@
       }
     },
 
-    "hasRelationshipFamily": {
-      "include": ["relationshipData"],
+    "contributingFamily": {
       "pendingResources": {
         "_:agent": {
           "about": "_:contribution",
@@ -684,8 +691,7 @@
       }
     },
 
-    "hasRelationshipOrganization": {
-      "include": ["relationshipData"],
+    "contributingOrganization": {
       "pendingResources": {
         "_:agent": {
           "about": "_:contribution",
@@ -698,8 +704,7 @@
       }
     },
 
-    "hasRelationshipJurisdiction": {
-      "include": ["relationshipData"],
+    "contributingJurisdiction": {
       "pendingResources": {
         "_:agent": {
           "about": "_:contribution",
@@ -710,6 +715,23 @@
         "_:isPartOf": {"about": "_:agent", "link": "isPartOf", "resourceType": "Jurisdiction"},
         "_:place": {"about": "_:agent", "addLink": "place", "resourceType": "Place"}
       }
+    },
+
+
+    "hasRelationshipPerson": {
+      "include": ["contributingPerson", "relationshipData"]
+    },
+
+    "hasRelationshipFamily": {
+      "include": ["contributingFamily", "relationshipData"]
+    },
+
+    "hasRelationshipOrganization": {
+      "include": ["contributingOrganization", "relationshipData"]
+    },
+
+    "hasRelationshipJurisdiction": {
+      "include": ["contributingJurisdiction", "relationshipData"]
     },
 
     "relatedToData": {
@@ -773,44 +795,56 @@
       }
     },
 
-    "seeAlsoPerson": {
-      "include": ["agentData"],
+    "agentHasRelationshipPerson": {
+      "include": ["agentDataWithRelation"],
+      "addLink": "relationship",
+      "resourceType": "Relationship",
       "pendingResources": {
-        "_:agent": {"addLink": "seeAlso", "resourceType": "Person", "required": true}
+        "_:agent": {"link": "agent", "resourceType": "Person", "required": true}
       },
       "$0": {"about": "_:agent", "addProperty": "marc:recordControlNumber"}
     },
 
-    "seeAlsoOrganization": {
-      "include": "agentData",
-      "addLink": "seeAlso",
-      "resourceType": "Organization",
-      "aboutAlias": "_:agent",
+    "agentHasRelationshipFamily": {
+      "include": ["agentDataWithRelation"],
+      "addLink": "relationship",
+      "resourceType": "Relationship",
       "pendingResources": {
+        "_:agent": {"link": "agent", "resourceType": "Family", "required": true}
+      },
+      "$0": {"about": "_:agent", "addProperty": "marc:recordControlNumber"}
+    },
+
+    "agentHasRelationshipOrganization": {
+      "include": ["agentDataWithRelation"],
+      "addLink": "relationship",
+      "resourceType": "Relationship",
+      "pendingResources": {
+        "_:agent": {"link": "agent", "resourceType": "Organization", "required": true},
         "_:isPartOf": {"about": "_:agent", "link": "isPartOf", "resourceType": "Organization"},
         "_:place": {"about": "_:agent", "addLink": "place", "resourceType": "Place"}
       },
       "$0": {"about": "_:agent", "addProperty": "marc:recordControlNumber"}
     },
 
-    "seeAlsoJurisdiction": {
-      "include": "agentData",
-      "addLink": "seeAlso",
-      "resourceType": "Jurisdiction",
-      "aboutAlias": "_:agent",
+    "agentHasRelationshipJurisdiction": {
+      "include": ["agentDataWithRelation"],
+      "addLink": "relationship",
+      "resourceType": "Relationship",
       "pendingResources": {
+        "_:agent": {"link": "agent", "resourceType": "Jurisdiction", "required": true},
         "_:isPartOf": {"about": "_:agent", "link": "isPartOf", "resourceType": "Jurisdiction"},
         "_:place": {"about": "_:agent", "addLink": "place", "resourceType": "Place"}
       },
       "$0": {"about": "_:agent", "addProperty": "marc:recordControlNumber"}
     },
 
-    "seeAlsoMeeting": {
-      "include": "agentData",
-      "addLink": "seeAlso",
-      "resourceType": "Meeting",
-      "aboutAlias": "_:agent",
+    "agentHasRelationshipMeeting": {
+      "include": ["agentDataWithRelation"],
+      "addLink": "relationship",
+      "resourceType": "Relationship",
       "pendingResources": {
+        "_:agent": {"link": "agent", "resourceType": "Meeting", "required": true},
         "_:isPartOf": {"about": "_:agent", "link": "isPartOf", "resourceType": "Meeting"},
         "_:place": {"about": "_:agent", "addLink": "place", "resourceType": "Place"}
       },
@@ -14305,22 +14339,19 @@
         },
         {
           "when": "i1=0",
-          "include": ["seeAlsoPerson", "agentdataPerson"]
+          "include": ["agentHasRelationshipPerson", "agentdataPerson"]
         },
         {
           "when": "i1=1",
-          "include": ["seeAlsoPerson", "agentdataNameOfPerson"]
+          "include": ["agentHasRelationshipPerson", "agentdataNameOfPerson"]
         },
         {
           "when": "i1=3",
-          "pendingResources": {
-            "_:agent": {"addLink": "seeAlso", "resourceType": "Family", "required": true}
-          },
-          "include": ["agentData", "agentdataFamily"]
+          "include": ["agentHasRelationshipFamily", "agentdataFamily"]
         },
         {
           "when": null,
-          "include": ["seeAlsoPerson", "agentdataNameOfPerson"]
+          "include": ["agentHasRelationshipPerson", "agentdataNameOfPerson"]
         }
       ],
       "subfieldOrder": "w i a b c q d j e 4 t g m n p r s l k f o v x y z",
@@ -14334,28 +14365,78 @@
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [ {
-                "@type": "Family",
-                "name": "Horn Family"
-              } ]
+              "relationship": [{
+                "@type": "Relationship",
+                "agent" : {
+                  "@type" : "Family",
+                  "name" : "Horn Family"
+                }
+              }]
             }
           }
         },
         {
           "source": {
             "500": {"ind1": "1", "ind2": " ", "subfields": [
+              {"w": "i"},
               {"a": "Oats, Joyce Carol"},
-              {"d": "1938-"}
+              {"d": "1938-"},
+              {"i": "Folkbiblioteksform:"},
+              {"0": "00000"}
+            ]}},
+          "normalized": {
+            "500": {"ind1": "1", "ind2": " ", "subfields": [
+              {"w": "i"},
+              {"i": "Folkbiblioteksform:"},
+              {"a": "Oats, Joyce Carol"},
+              {"d": "1938-"},
+              {"0": "00000"}
             ]}},
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [ {
-                "@type": "Person",
-                "familyName": "Oats",
-                "givenName": "Joyce Carol",
-                "lifeSpan": "1938-"
-              } ]
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
+                  "@type": "Person",
+                  "familyName": "Oats",
+                  "givenName": "Joyce Carol",
+                  "lifeSpan": "1938-",
+                  "marc:controlSubfield": "i",
+                  "marc:recordControlNumber": ["00000"]
+                },
+                "relation": [{
+                  "@type": "Relation",
+                  "label": "Folkbiblioteksform:"
+                }]
+              }]
+            }
+          }
+        },
+        {
+          "source": {
+            "500": {"ind1": "0", "ind2": " ", "subfields": [
+              {"i": "Familjemedlen:"},
+              {"a": "Muminpappan"},
+              {"c": "(fiktiv gestalt)"},
+              {"0": "00000"}
+            ]}},
+          "result": {
+            "mainEntity": {
+              "@type": "Identity",
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
+                  "@type": "Person",
+                  "marc:recordControlNumber": [ "00000" ],
+                  "marc:titlesAndOtherWordsAssociatedWithAName": [ "(fiktiv gestalt)" ],
+                  "name": "Muminpappan"
+                },
+                "relation": [{
+                  "@type": "Relation",
+                  "label": "Familjemedlen:"
+                }]
+              }]
             }
           }
         },
@@ -14404,6 +14485,14 @@
               {"t": "Ballades,"},
               {"n": "op. 19"},
               {"m": "piano"}
+            ]}},
+          "normalized": {
+            "500": {"ind1": "1", "ind2": " ", "subfields": [
+              {"a": "Fauré, Gabriel"},
+              {"d": "1845-1924."},
+              {"t": "Ballades,"},
+              {"m": "piano"},
+              {"n": "op. 19"}
             ]}},
           "result": {
             "mainEntity": {
@@ -14481,27 +14570,27 @@
         },
         {
           "when": "$b & i1=2",
-          "include": ["seeAlsoOrganization", "agentdataOrganizationSubUnit"],
+          "include": ["agentHasRelationshipOrganization", "agentdataOrganizationSubUnit"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         },
         {
           "when": "$b & i1=1",
-          "include": ["seeAlsoJurisdiction", "agentdataOrganizationSubUnit"],
+          "include": ["agentHasRelationshipJurisdiction", "agentdataOrganizationSubUnit"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         },
         {
           "when": "$b & i1=0",
-          "include": ["seeAlsoOrganization", "agentdataOrganizationSubUnit"],
+          "include": ["agentHasRelationshipOrganization", "agentdataOrganizationSubUnit"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         },
         {
           "when": "i1=0 | i1=2",
-          "include": ["seeAlsoOrganization", "agentdataOrganization"],
+          "include": ["agentHasRelationshipOrganization", "agentdataOrganization"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         },
         {
           "when": "i1=1",
-          "include": ["seeAlsoJurisdiction", "agentdataOrganization"],
+          "include": ["agentHasRelationshipJurisdiction", "agentdataOrganization"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         },
         {
@@ -14510,12 +14599,11 @@
         },
         {
           "when": null,
-          "include": ["seeAlsoOrganization", "agentdataOrganization"],
+          "include": ["agentHasRelationshipOrganization", "agentdataOrganization"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         }
       ],
       "$h": {"ignored": true},
-      "FIXME:subfieldOrder": "Not working correctly. Have added 'normalized' just to make the revert pass",
       "subfieldOrder": "w i a b c d g  e 4 t m n p r s l k f o v x y z",
       "_spec": [
         {
@@ -14527,10 +14615,13 @@
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [{
-                "@type": "Organization",
-                "name": "Oklahoma Council on Juvenile Delinquency",
-                "marc:controlSubfield": "b"
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
+                  "@type": "Organization",
+                  "marc:controlSubfield": "b",
+                  "name": "Oklahoma Council on Juvenile Delinquency"
+                }
               }]
             }
           }
@@ -14543,9 +14634,13 @@
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [{
-                "@type": "Organization",
-                "name": "Five Pieces (reportagegrupp)"}]
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
+                  "@type": "Organization",
+                  "name": "Five Pieces (reportagegrupp)"
+                }
+              }]
             }
           }
         },
@@ -14554,19 +14649,37 @@
             "510": {"ind1": "1", "ind2": " ", "subfields": [
               {"w": "a"},
               {"a": "Maryland."},
-              {"b": "Air Quality Programs"}
+              {"b": "Air Quality Programs"},
+              {"i": "En relationsbeteckning"},
+              {"0": "00000"}
+            ]}},
+          "normalized": {
+            "510": {"ind1": "1", "ind2": " ", "subfields": [
+              {"w": "a"},
+              {"i": "En relationsbeteckning"},
+              {"a": "Maryland."},
+              {"b": "Air Quality Programs"},
+              {"0": "00000"}
             ]}},
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [{
-                "@type": "Jurisdiction",
-                "marc:controlSubfield": "a",
-                "marc:subordinateUnit": ["Air Quality Programs"],
-                "isPartOf": {
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
                   "@type": "Jurisdiction",
-                  "name": "Maryland."
-                }
+                  "isPartOf": {
+                    "@type": "Jurisdiction",
+                    "name": "Maryland."
+                  },
+                  "marc:controlSubfield": "a",
+                  "marc:recordControlNumber": ["00000"],
+                  "marc:subordinateUnit": ["Air Quality Programs"]
+                },
+                "relation": [{
+                  "@type": "Relation",
+                  "label": "En relationsbeteckning"
+                }]
               }]
             }
           }
@@ -14592,7 +14705,7 @@
         },
         {
           "when": null,
-          "include": ["seeAlsoMeeting", "agentdataMeeting"],
+          "include": ["agentHasRelationshipMeeting", "agentdataMeeting"],
           "$n": {"addProperty": "marc:partNumber", "punctuationChars": ","}
         }
       ],
@@ -14608,10 +14721,13 @@
           "result": {
             "mainEntity": {
               "@type": "Identity",
-              "seeAlso": [{
-                "@type": "Meeting",
-                "marc:controlSubfield" : "a",
-                "name": "Colloque européen de droit rural"
+              "relationship": [{
+                "@type": "Relationship",
+                "agent": {
+                  "@type": "Meeting",
+                  "marc:controlSubfield": "a",
+                  "name": "Colloque européen de droit rural"
+                }
               }]
             }
           }
