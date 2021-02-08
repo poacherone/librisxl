@@ -9,6 +9,7 @@ import whelk.Document
         where = "collection = 'bib' and data#>'{@graph,1,supplementTo}' @> '[null]'"
 
     selectBySqlWhere(where) { data ->
+
         List propertyValueOfCurrentVersion = data.graph[1][property]
         List propertyValueBeforeLoss
         List propertyValueRightAfterLoss
@@ -37,6 +38,19 @@ import whelk.Document
         List recoveredPropertyValue = recover(propertyValueBeforeLoss)
 
         List linkedPropertyValue = link(recoveredPropertyValue)
+
+        // If 'part' is in mainEntity, it's superfluous in 'isPartOf'
+        if (data.graph[1].containsKey('part')) {
+            println("PART")
+            data.graph[1]['part']
+            println("BEFORE")
+            println(linkedPropertyValue)
+            linkedPropertyValue.each {
+                it.remove('part')
+            }
+            println("AFTER")
+            println(linkedPropertyValue)
+        }
 
         data.graph[1][property] = linkedPropertyValue
 
