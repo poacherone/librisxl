@@ -1,5 +1,5 @@
 String SIGEL_TO_DELETE = 'Htue'
-String HOLD_ID_FILE = 'Htuelib_ids.txt'
+String HOLD_ID_FILE = 'Htue_ids.txt'
 
 File holdsToRemove = new File(scriptDir, HOLD_ID_FILE)
 
